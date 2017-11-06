@@ -1,0 +1,9 @@
+{
+	"name": "dslu",
+	"authors": [
+		"Dentcho Bankov"
+	],
+	"description": "DLang simple end efficient string literal utilities.",
+	"copyright": "Copyright © 2017, Dentcho Bankov",
+	"license": "BSL-1.0"
+}
