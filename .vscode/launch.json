@@ -7,8 +7,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "test.sleqs",
-            "program": "${workspaceRoot}/tests/tests.sleqs",
+            "name": "test.slers",
+            "program": "${workspaceRoot}/tests/tests.slers",
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "stopOnEntry": true
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "test.rsers",
+            "program": "${workspaceRoot}/tests/tests.rsers",
             "args": [],
             "cwd": "${workspaceRoot}",
             "stopOnEntry": true

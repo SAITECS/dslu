@@ -1,9 +1,9 @@
 /++ dub.sdl:
-	name "tests.memcmp"
+	name "tests.rsers"
 	dependency "dslu" path=".."
 +/
 
-module tests.memcmp;
+module tests.rsers;
 
 import dslu;
 import test.utils;
@@ -11,6 +11,8 @@ import test.utils;
 import std.datetime;
 import std.meta;
 import std.stdio;
+
+
 
 /// Number of iterations
 enum ulong C = 1_000_000;
@@ -25,12 +27,12 @@ int main()
 	foreach(I, S; aliasSeqOf!SS)
 	{
 		string s = S.dup;
-		ad[I] = benchmark!(() => ar[I] += memcmp!(S, false, true)(s) ? 1 : 0)(C)[0];
+		ad[I] = benchmark!(() => ar[I] += rsers!(S, false, true)(s) ? 1 : 0)(C)[0];
 	}
 
 	int tr;
 	TickDuration td;
-	auto o = File("tests/tests.memcmp.txt", "w+");
+	auto o = File("tests/tests.rsers.txt", "w+");
 	foreach(i, _; ad)
 	{
 		td += ad[i];

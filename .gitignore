@@ -24,7 +24,4 @@ docs/
 *.lst
 
 dslu-test-*
-tests/tests.sleqs
-tests/sleqs.txt
-tests/tests.memcmp
-tests/memcmp.txt
+tests/tests.*

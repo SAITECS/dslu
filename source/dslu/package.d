@@ -1,3 +1,3 @@
 module dslu;
 
-public import dslu.sleqs;
+public import dslu.slers;

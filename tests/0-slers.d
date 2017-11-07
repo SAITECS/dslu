@@ -1,9 +1,9 @@
 /++ dub.sdl:
-	name "tests.sleqs"
+	name "tests.slers"
 	dependency "dslu" path=".."
 +/
 
-module tests.sleqs;
+module tests.slers;
 
 import dslu;
 import test.utils;
@@ -25,12 +25,12 @@ int main()
 	foreach(I, S; aliasSeqOf!SS)
 	{
 		string s = S.dup;
-		ad[I] = benchmark!(() => ar[I] += sleqs!(S, false, false)(s) ? 1 : 0)(C)[0];
+		ad[I] = benchmark!(() => ar[I] += slers!(S, false, true)(s) ? 1 : 0)(C)[0];
 	}
 
 	int tr;
 	TickDuration td;
-	auto o = File("tests/sleqs.txt", "w+");
+	auto o = File("tests/tests.slers.txt", "w+");
 	foreach(i, _; ad)
 	{
 		td += ad[i];
