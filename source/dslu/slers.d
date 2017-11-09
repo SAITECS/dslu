@@ -119,8 +119,8 @@ unittest
  *	}
  *	---
  *
- *	Copyright: © 2017 SAITECS Ltd.
- *	License: Subject to the terms of the BSD-1.0 license, as written in the
+ *	Copyright: © 2017 SAITECS
+ *	License: Subject to the terms of the BSL-1.0 license, as written in the
  *			 included LICENSE.txt file.
  *	Authors: Dentcho Bankov
  */
