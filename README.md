@@ -1,10 +1,10 @@
-# DSLU aka DLang String Literal Utils
+# **DSLU** aka DLang String Literal Utils
 
-# Overview
+## Overview
 
-DSLU is a D Programming Language library containing several simple but efficient utilities targeted at better utilization of string literals:
+**DSLU** is a D Programming Language library containing several simple but efficient utilities targeted at better utilization of string literals:
 
-* SLERS aka String Literal Equals Runtime String
+* **slers** aka String Literal Equals Runtime String
 
 ```D
 /**
@@ -53,7 +53,7 @@ DSLU is a D Programming Language library containing several simple but efficient
 
 First and foremost is the **slers** (String Literal Equals Runtime String) function which is a simple comparison utility that can be used to check if a runtime string is equal to a string literal provided as a template parameter at compile time. On average the comparison is done about twice faster than the compiler provided runtime string **opEquals/memcmp** implementations for strings ranging from 1 to 128 bytes. Note that for most strings with lenghts from 1 to 16 bytes LDC2's/CLANG's **opEquals/memcmp** generates exactly the same code as **slers** thus in these cases performance of the **slers** function is equal to **opEquals/memcmp**. For larger strings **slers** is significantly faster which brings the average result to what was mentioned above. The improved performance is achieved at the cost of additional code being generated. Precisely a separate function is generated for each string literal and the actual comparison is done by converting the string literal to a set of integer literals at compile time and then at runtime comparing the passed runtime string against these integer literals by casting the corresponding parts of the runtime string to the appropriate integral type and comparing the resulting value(s). The reason for this approach to provide better performance than **opEquals/memcmp** is because the integer literals in the generated code are compiled to immediate processor instructions for the x86/AMD64 CPUs thus becoming part of the code itself (which however also increases the generated code size). The latter means that effectively the string literal is loaded through the instruction cache while the runtime string is loaded through the data cache which seems to produce better performance results.
 
-To ilustrate what _slers_ does at compile time below is an example of the function generated when the "00000000111111112222334" string literal is passed to it:
+To ilustrate what **slers** does at compile time below is an example of the function generated when the "00000000111111112222334" string literal is passed to it:
 
 ```D
 bool slers!("00000000111111112222334")(string rs)
@@ -93,7 +93,7 @@ and below is the (LDC2) assembly representation of the generated code:
 100009AD4: 66 66 66 2E 0F 1F 84 00 >  nopw   %cs:(%rax,%rax) 
 ```
 
-# Testing
+## Testing
 
 To build and run the DSLU library unit tests execute:
 
