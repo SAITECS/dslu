@@ -17,6 +17,7 @@ alias ALL_INTEGRAL_TYPES = AliasSeq!(ulong, uint, ushort, ubyte);
 alias ORDERED_AVAILABLE_INTEGRAL_TYPES =
 	staticSort!(SIZE_COMPARE, Filter!(SIZE_FILTER, ALL_INTEGRAL_TYPES));
 
+
 template SizeToTypeOffsetTuple(
 	size_t TOTAL_SIZE,
 	INTEGRAL_TYPES_LIST = ORDERED_AVAILABLE_INTEGRAL_TYPES)
@@ -65,11 +66,14 @@ unittest
 //	static assert(is(SOT : ESOT));
 }
 
-string toHexString(TYPE)(string s, size_t ubo = 0)
+
+@trusted
+string toHexString(TYPE)(in string s, in size_t ubo = 0)
 {
-	ubyte[SIZE!TYPE] uba = (cast(ubyte[]) s)[ubo..ubo + SIZE!TYPE];
-	version(LittleEndian) { reverse(uba[]); }
-	return uba[].map!(ub => to!string(ub, 16)).join;
+	import std.system: Endian, endian;
+	import std.digest.digest: toHexString, Order;
+	enum o = endian == Endian.littleEndian ? Order.decreasing: Order.increasing;
+	return toHexString!(o)((cast(ubyte[]) s)[ubo..ubo + SIZE!TYPE]);
 }
 
 @safe
@@ -78,20 +82,51 @@ unittest
 	static assert(toHexString!(ulong)("ABCDEFGH12345678", 8) == "3837363534333231");
 }
 
-/**
-	Checks if a string literal is equal to a runtime provided string but faster
-	than memcmp. The latter is achieved by employing the CPU instruction cache
-	for the string literal data which is done by representing the string literal
-	in the form of one or more integer literal(s) which correspond to the
-	runtime string representation in memory.
 
-	Copyright: © 2017 SAITECS Ltd.
-	License: Subject to the terms of the BSD-1.0 license, as written in the
-			 included LICENSE.txt file.
-	Authors: Dentcho Bankov
-*/
+/**
+ *	Checks if a string literal is equal to a runtime provided string.
+ *
+ *  The performance of the comparison is the same or faster than memcmp. This is
+ *	achieved by employing the x86/AMD64 CPU instruction cache for the string
+ *	literal data which itself is achieved by representing the string literal in
+ *	the form of one or more integer literal(s) which correspond to the runtime
+ *	string representation in memory.
+ *
+ *	Params:
+ *		SL = String Literal: Template string parameter containing the value for
+ *			 which comparison code is generated.
+ *		CL = Check Length: Template boolean parameter controling if a length
+ *			 check code should be generated. True by default i.e. length check
+ *			 code is generated if parameter value is not provided.
+ *		NI = No Inline: Template boolean parameter which can be used to prevent
+ *			 inlining the generated function. False by default i.e. generated
+ *			 function is inlineable if parameter value is not provided.
+ *		rs = Runtime String: String parameter containing the value which is
+ *			 compared against the template provided string value.
+ *
+ *	Examples:
+ *	---
+ *	import dslu;
+ * 
+ *	int main(string[] args)
+ *	{
+ *		if (args.length > 0)
+ *		{
+ *			return slers!("--option")(args[1]);
+ *		}
+ *
+ *		return 0;
+ *	}
+ *	---
+ *
+ *	Copyright: © 2017 SAITECS Ltd.
+ *	License: Subject to the terms of the BSD-1.0 license, as written in the
+ *			 included LICENSE.txt file.
+ *	Authors: Dentcho Bankov
+ */
+
 public
-@system
+@trusted
 bool slers(string SL, bool CL = true, bool NI = false)(string rs)
 {
 	static if (NI)
@@ -116,11 +151,8 @@ bool slers(string SL, bool CL = true, bool NI = false)(string rs)
 			foreach(CURRENT_COUNT; aliasSeqOf!(iota(TYPE_COUNT!INDEX)))
 			{
 				enum CURRENT_OFFSET = START_OFFSET!INDEX + CURRENT_COUNT * SIZE!TYPE;
-				enum INTEGER_LITERAL =
-					mixin("0x" ~ toHexString!TYPE(SL, CURRENT_OFFSET));
-
+				enum INTEGER_LITERAL = mixin("0x" ~ toHexString!TYPE(SL, CURRENT_OFFSET));
 				debug pragma(msg, "Offset:\t", CURRENT_OFFSET, "\tValue:\t", INTEGER_LITERAL);
-
 				if (INTEGER_LITERAL != *(cast(TYPE*) &(cast(void*) rs)[CURRENT_OFFSET])) return false;
 			}
 		}
@@ -130,7 +162,7 @@ bool slers(string SL, bool CL = true, bool NI = false)(string rs)
 }
 
 /*
-@system
+@trusted
 public
 bool slers(string SL, bool CL = true, bool NI = false)(string rs)
 {
@@ -171,7 +203,7 @@ exit:
 }
 */
 
-@system
+@safe
 unittest
 {
 	enum SS = "00000000111111112222334";

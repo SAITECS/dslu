@@ -10,9 +10,9 @@ import std.meta;
 import std.range;
 
 /**
-    Utility function used to generate the set of strings containing strings of
-    sizes from 1 to 128 chars
-*/
+ *	Utility function used to generate a string array containing strings of size
+ *	varying from 1 to 128 chars based on the 'letters' array from std.ascii.
+ */
 @safe
 public
 string[] generateStrings()
@@ -21,7 +21,7 @@ string[] generateStrings()
 
 	foreach(i; 0..127)
 	{
-		result ~= uppercase.cycle.drop(i).take(i + 1).map!((c) @trusted => cast(char) c).array;
+		result ~= letters.cycle.drop(i).take(i + 1).map!((c) @trusted => cast(char) c).array;
 	}
 
 	return result;
@@ -41,11 +41,6 @@ bool rsers(string SL, bool CL = true, bool NI = false)(string rs)
 	static if (NI)
 	{
 		pragma(inline, false);
-	}
-
-	static if (CL)
-	{
-		if (SL.length != rs.length) return false;
 	}
 
 	return SL == rs;
